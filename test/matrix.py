@@ -86,3 +86,20 @@ def shortestDistance(grid):
                     elif grid[i][j] == 1:
                         count1 += 1
         return count1 == buildings
+
+
+def do():
+    dir = [(0, 1), (-1, 1), (1, 1)]
+    gold = [[1, 3, 1, 5],
+            [2, 2, 4, 1],
+            [5, 0, 2, 3],
+            [0, 6, 1, 2]]
+
+    def getMaxGold(gold, i, j):
+        if 0 <= i < len(gold) and 0 <= j < len(gold[0]):
+            return max(gold[i][j] + getMaxGold(gold, i + d[0], j + d[1]) for d in dir)
+        return 0
+
+    print max(getMaxGold(gold, i, 0) for i in range(len(gold)))
+
+# print getMaxGold(gold, 0, 0)

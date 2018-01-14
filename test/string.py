@@ -1,5 +1,7 @@
 from Queue import Queue
-from collections import Counter, OrderedDict
+from collections import Counter, OrderedDict, defaultdict
+
+import sys
 
 
 def cmp(x, y):
@@ -175,12 +177,12 @@ def subsets(l):
 # print subsets([1, 2, 3])
 
 
-def findFirstNonRepeating(stream):
+def findFirstNonRepeating(str):
     d = OrderedDict()
     i = 0
     l = len(str)
     while i < l:
-        ch = stream[i]
+        ch = str[i]
         if ch in d:
             d.pop(ch)
         else:
@@ -197,6 +199,77 @@ def gen(str):
         i += 1
 
 
-str = "geeksforgeeksandgeeksquizfor"
-# stream = gen(str)
-findFirstNonRepeating(str)
+#
+# str = "geeksforgeeksandgeeksquizfor"
+# # stream = gen(str)
+# findFirstNonRepeating(str)
+
+
+def longestChain(words):
+    def dfs(u):
+        if not graph[u]:
+            return 1
+        return max(dfs(v) + 1 for v in graph[u])
+
+    # visited = set()
+    dictionary = set(words)
+    graph = defaultdict(list)
+
+    for word in words:
+        for i in range(len(word)):
+            connect = word[:i] + word[i + 1:]
+            if connect in dictionary:
+                graph[word].append(connect)
+
+    print graph
+
+    return max(dfs(word) for word in words)
+
+
+# words = ["a", "b", "ba", "bca", "bda", "bdca"]
+# print longestChain(words)
+
+def letterCombinations(self, digit_str):
+    digit_map = {0: '0', 1: '1', 2: 'abc', 3: 'def', 4: 'ghi', 5: 'jkl', 6: 'mno', 7: 'pqrs', 8: 'tuv', 9: 'wxyz'}
+    if len(digit_str) == 1:
+        return list(digit_map[int(digit_str)])
+
+    combinations = self.letterCombinations(digit_str[1:])
+    lettercombinations = list(digit_map[int(digit_str[0])])
+    new_comp = []
+    for each in lettercombinations:
+        for combination in combinations:
+            new_comp.append(each + combination)
+    return new_comp
+
+
+def minWindow(s, t):
+    counter = Counter(t)
+    print counter
+    begin = end = 0
+    count = len(t)
+    d = sys.maxint
+    head = 0
+    while end < len(s):
+        if s[end] in counter:  # in t
+            counter[s[end]] -= 1
+            count -= 1
+            end += 1
+        while count == 0:
+            if end - begin < d:
+                d = end - begin
+                head = begin
+            if counter[s[begin]] == 0:
+                counter[s[begin]] += 1
+                count += 1
+            begin += 1
+
+    return "" if d == sys.maxint else s[head:d]
+
+
+s = "this is a test string"
+t = "tist"
+print minWindow(s, t)
+c = Counter(t)
+c['i'] -= 1
+print c

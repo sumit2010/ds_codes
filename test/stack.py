@@ -50,10 +50,33 @@ class Queue:
         return self.front_elt
 
 
-q = Queue()
-q.enqueue(1)
-q.enqueue(2)
+# q = Queue()
+# q.enqueue(1)
+# q.enqueue(2)
+#
+# print q.front()
+# q.dequeue()
+# print q.front()
 
-print q.front()
-q.dequeue()
-print q.front()
+
+def braces(values):
+    match = {'(': ')', '{': '}', '[': ']'}
+    res = []
+    for value in values:
+        stack = []
+        flag = False
+        for v in value:
+            if v in ['(', '{', '[']:
+                stack.append(v)
+            else:
+                if not stack or match[stack.pop()] != v:
+                    res.append("NO")
+                    flag = True
+                    break
+        if not flag:
+            res.append("YES" if not stack else "NO")
+
+    return res
+
+
+# print braces(["{}[]()", "{[}]"])

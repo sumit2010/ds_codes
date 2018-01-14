@@ -30,18 +30,15 @@ class Interval:
 
 
 def merge(intervals):
-    st = []
-    intervals.sort(cmp=lambda i1, i2: i1.start - i2.start)
+    intervals.sort(key=lambda x: x[0])
+    merged = []
     for interval in intervals:
-        if len(st) == 0:
-            st.append(interval)
+        if not merged or merged[-1][1] < interval[0]:
+            merged.append(interval)
         else:
-            if interval.start > st[-1].end:
-                st.append(interval)
-            elif st[-1].end < interval.end:
-                st[-1].end = interval.end
+            merged[-1][1] = max(merged[-1][1], interval[1])
 
-    return st
+    return merged
 
 
 def hotel_booking(arrive, depart, k):
@@ -292,7 +289,21 @@ def findMedian(A_list):
         k -= 1
     return e
 
+def kthSmallest(self, matrix, k):
+    def do(matrix, k):
+        import heapq
+        min_heap = []
+        for i in range(len(matrix[0])):
+            heapq.heappush(min_heap, (matrix[0][i], 0, i))
 
+        for i in range(k):
+            pop = heapq.heappop(min_heap)
+            if pop[1] < len(matrix) - 1:
+                heapq.heappush(min_heap, (matrix[pop[1] + 1][pop[2]], pop[1] + 1, pop[2]))
+
+        return pop
+
+    return do(matrix, k)[0]
 # print findMedian([
 #     [1, 3, 5],
 #     [2, 6, 9],
@@ -388,7 +399,60 @@ def reductionCost(num):
     return cost
 
 
-# print reductionCost([1, 2, 3, 4])
-d = dict((i, list()) for i in range(10))
-print d[0].append(1)
-print d
+def waitingTime(tickets, p):
+    time = 0
+    while True:
+        popped = tickets.pop(0)
+        time += 1
+        if popped == 1:
+            if p == 0:
+                return time
+        else:
+            tickets.append(popped - 1)
+        p = p - 1 if p > 0 else len(tickets) - 1
+
+
+# print waitingTime([2, 6, 3, 4, 5], 2)
+
+
+def buildbridge(cities):
+    cities.sort(cmp=lambda x, y: x[1] - y[1])
+
+
+# cities = [[2, 6], [5, 4], [8, 1], [10, 2]]
+# buildbridge(cities)
+
+# s = ["cat", "dog", "tac", "god", "act"]
+# print sorted(s, cmp=lambda x, y: 1 if ''.join(sorted(x)) > ''.join(sorted(y))else -1)
+def candies():
+    INF = 10 ** 9  # a number larger than all ratings
+    a = [5, 10, 15, 13, 10, 4, 6, 9]
+    n = 8
+    # add sentinels
+    a = [INF] + a + [INF]
+
+    candies = [0] * (n + 1)
+    # populate 'valleys'
+    for i in xrange(1, n + 1):
+        if a[i - 1] >= a[i] <= a[i + 1]:
+            candies[i] = 1
+
+    print candies
+    # populate 'rises'
+    for i in xrange(1, n + 1):
+        if a[i - 1] < a[i] <= a[i + 1]:
+            candies[i] = candies[i - 1] + 1
+    print candies
+    # populate 'falls'
+    for i in xrange(n, 0, -1):
+        if a[i - 1] >= a[i] > a[i + 1]:
+            candies[i] = candies[i + 1] + 1
+    print candies
+    # populate 'peaks'
+    for i in xrange(1, n + 1):
+        if a[i - 1] < a[i] > a[i + 1]:
+            candies[i] = max(candies[i - 1], candies[i + 1]) + 1
+
+    print candies
+    # print the total number of candies
+    print sum(candies)

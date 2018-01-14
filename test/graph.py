@@ -57,32 +57,104 @@ class Graph:
 
 
 
+def test():
+    # Enter your code here. Read input from STDIN. Print output to STDOUT
+    from collections import defaultdict
 
-# Enter your code here. Read input from STDIN. Print output to STDOUT
-from collections import defaultdict
+    # Enter your code here. Read input from STDIN. Print output to STDOUT
+    def dependent_passed(graph, tests, u):
+        if not tests[u - 1]:
+            return False
+        if not graph[u]:
+            return True
+        return all(dependent_passed(v) for v in graph[u])
+
+    n = int(raw_input().split(' ')[1])
+    graph = defaultdict(list)
+    tests = map(int, raw_input().split())
+    for i in range(n):
+        x, y = raw_input().split(' ')
+        graph[x].append(y)
+
+    print graph
+
+    for test, has_passed in enumerate(tests):
+        if has_passed == 0:
+            print "NO"
+        else:
+            print "YES" if dependent_passed(graph, tests, test + 1) else "NO"
 
 
-# Enter your code here. Read input from STDIN. Print output to STDOUT
-def dependent_passed(graph, tests, u):
-    if not tests[u - 1]:
-        return False
-    if not graph[u]:
-        return True
-    return all(dependent_passed(v) for v in graph[u])
+def zombieCluster(zombies):
+    def dfs(i):
+        visited.add(i)
+        for j in range(len(zombies[i])):
+            if zombies[i][j] == 1 and j not in visited:
+                dfs(j)
+
+    visited = set()
+    clusters = 0
+    for i in range(len(zombies)):
+        if i not in visited:
+            dfs(i)
+            clusters += 1
+    return clusters
 
 
-n = int(raw_input().split(' ')[1])
-graph = defaultdict(list)
-tests = map(int, raw_input().split())
-for i in range(n):
-    x, y = raw_input().split(' ')
-    graph[x].append(y)
+#
+#
+# zombies = [[1, 1, 0, 0],
+#            [1, 1, 1, 0],
+#            [0, 1, 1, 0],
+#            [0, 0, 0, 1]]
+# print zombieCluster(zombies)
 
-print graph
 
-for test, has_passed in enumerate(tests):
-    if has_passed == 0:
-        print "NO"
-    else:
-        print "YES" if dependent_passed(graph, tests, test + 1) else "NO"
+# Complete the function below.
 
+def connectedCities(n, g, originCities, destinationCities):
+    def gcd(x, y):
+        while y != 0:
+            (x, y) = (y, x % y)
+        return x
+
+    res = []
+
+    gcd_table = [[None] * (n + 1) for _ in range(n + 1)]
+    for i in range(1, n + 1):
+        for j in range(i + 1, n + 1):
+            gcd_table[i][j] = gcd_table[j][i] = gcd(i, j)
+
+    def bfs(s, d):
+        visited = [False] * (n + 1)
+
+        # Create a queue for BFS
+        queue = []
+
+        # Mark the source node as visited and enqueue it
+        queue.append(s)
+        visited[s] = True
+
+        while queue:
+
+            # Dequeue a vertex from queue and print it
+            s = queue.pop(0)
+            if s == d:
+                return True
+
+            # Get all adjacent vertices of the dequeued
+            # vertex s. If a adjacent has not been visited,
+            # then mark it visited and enqueue it
+            for i in range(1, n + 1):
+
+                if gcd_table[s][i] > g and visited[i] == False:
+                    queue.append(i)
+                    visited[i] = True
+
+    for s, d in zip(originCities, destinationCities):
+        res.append(1 if bfs(s, d) else 0)
+
+    return res
+
+
+print connectedCities(6, 1, [1, 4, 3, 6], [3, 6, 2, 5])
